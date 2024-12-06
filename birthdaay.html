@@ -1,0 +1,255 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Wish</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6E7F9B, #FBC82B); /* Beautiful gradient from ocean blue to golden yellow */
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+        }
+
+        .birthday-card {
+            background: linear-gradient(135deg, #f7a7c1, #ff6d9b); /* Soft pastel pink gradient */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            animation: cardAnimation 1.5s ease-out;
+        }
+
+        @keyframes cardAnimation {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .birthday-card .message h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #FF6F00, #FF4081, #1E90FF, #32CD32); /* Multi-color gradient */
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            animation: textBounce 2s ease-out infinite; /* Adding an animation */
+        }
+
+        @keyframes textBounce {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .birthday-card .message p {
+            font-size: 1.5rem;
+            color: #3C3C3C; /* Darker grey for text contrast */
+            margin-bottom: 10px;
+            animation: textFadeIn 1.5s ease-out;
+        }
+
+        @keyframes textFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .birthday-card .message .wish {
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: #FF6F00; /* Matching the golden color */
+        }
+
+        .birthday-card .cake-icon {
+            font-size: 4rem;
+            margin-top: 20px;
+            color: #FF6F00; /* Matching the golden color */
+        }
+
+        .birthday-card .input-section {
+            margin-top: 20px;
+        }
+
+        /* Updated input and textarea styles to make text visible */
+        .input-section input, .input-section textarea {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1rem;
+            border: 2px solid #FF6F00; /* Matching golden color */
+            border-radius: 5px;
+            color: #3C3C3C; /* Dark text color for visibility */
+            background-color: #fff; /* White background for the inputs */
+        }
+
+        .input-section button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1rem;
+            border: 2px solid #FF6F00; /* Matching golden color */
+            border-radius: 5px;
+            background-color: #FF6F00; /* Warm golden button */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-section button:hover {
+            background-color: #FF8C00; /* Slightly darker golden color */
+        }
+
+        .wish-display {
+            margin-top: 20px;
+        }
+
+        .wish-display h2 {
+            color: #FF6F00; /* Matching golden color */
+            font-size: 1.5rem;
+        }
+
+        .wish-item {
+            margin-bottom: 10px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #FF6F00; /* Matching golden color */
+            text-align: left;
+            color: #333; /* Dark text color for better readability */
+        }
+
+        /* Clear Button Style */
+        #clear-wishes-btn {
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #FF8C00; /* Slightly darker golden color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        #clear-wishes-btn:hover {
+            background-color: #FF6F00; /* Golden color */
+        }
+    </style>
+</head>
+<body>
+    <div class="birthday-card">
+        <div class="message">
+            <h1>10 December!</h1>
+            <p>So you came here to wish me....</p>
+            <p class="wish">Go Ahead!!!</p>
+        </div>
+        <div class="cake-icon">
+            🎂
+        </div>
+
+        <!-- Section to Add Birthday Wish -->
+        <div class="input-section">
+            <input type="text" id="name" placeholder="Enter your name" />
+            <textarea id="birthday-wish" placeholder="Enter your birthday wish" rows="4" cols="30"></textarea>
+            <button id="add-wish-btn">Add Birthday Wish</button>
+        </div>
+
+        <!-- Section to Show the Sent Wishes -->
+        <div class="wish-display" id="wish-display"></div>
+
+        <!-- Button to Show Who Sent the Wish -->
+        <button id="clear-wishes-btn">Clear All Wishes</button>
+    </div>
+
+    <script>
+        // Get the elements by their IDs
+        const addWishBtn = document.getElementById("add-wish-btn");
+        const nameInput = document.getElementById("name");
+        const wishInput = document.getElementById("birthday-wish");
+        const wishDisplay = document.getElementById("wish-display");
+        const clearWishesBtn = document.getElementById("clear-wishes-btn");
+
+        // Load the existing birthday wishes from localStorage
+        let birthdayWishes = JSON.parse(localStorage.getItem("birthdayWishes")) || [];
+
+        // Function to display all birthday wishes
+        function displayWishes() {
+            wishDisplay.innerHTML = "";
+            if (birthdayWishes.length === 0) {
+                wishDisplay.innerHTML = "<p>No birthday wishes yet.</p>";
+            } else {
+                birthdayWishes.forEach(wish => {
+                    wishDisplay.innerHTML += `
+                        <div class="wish-item">
+                            <strong>${wish.name}</strong> says: 
+                            <p>${wish.message}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        // Display existing wishes when the page loads
+        displayWishes();
+
+        // Event listener for the "Add Birthday Wish" button
+        addWishBtn.addEventListener("click", function() {
+            const name = nameInput.value.trim();
+            const wishMessage = wishInput.value.trim();
+
+            if (name && wishMessage) {
+                // Add new wish to the array
+                birthdayWishes.push({ name, message: wishMessage });
+
+                // Save updated wishes to localStorage
+                localStorage.setItem("birthdayWishes", JSON.stringify(birthdayWishes));
+
+                // Reset input fields
+                nameInput.value = "";
+                wishInput.value = "";
+
+                // Display updated list of wishes
+                displayWishes();
+            } else {
+                alert("Please fill in both fields.");
+            }
+        });
+
+        // Event listener for the "Clear All Wishes" button
+        clearWishesBtn.addEventListener("click", function() {
+            // Clear all wishes from localStorage
+            localStorage.removeItem("birthdayWishes");
+            birthdayWishes = [];
+            displayWishes();  // Re-render the wish list
+        });
+    </script>
+</body>
+</html>
